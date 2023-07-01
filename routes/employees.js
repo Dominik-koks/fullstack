@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { add, edit, remove, all, employee } = require('../controllers/employees');
 const { auth } = require('../middleware/auth');
-const { all, add, remove, employee, edit } = require('../controllers/employees');
 
 router.get('/', auth, all);
 router.get('/:id', auth, employee);

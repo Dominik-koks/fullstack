@@ -1,4 +1,3 @@
-const { response } = require('../app');
 const { prisma } = require('../prisma/prisma-client');
 
 /**
@@ -6,14 +5,13 @@ const { prisma } = require('../prisma/prisma-client');
  * @desc Получение всех сотрудников
  * @access Private
  */
-
 const all = async (req, res) => {
   try {
     const employees = await prisma.employee.findMany();
 
     res.status(200).json(employees);
-  } catch (error) {
-    res.status(200).json({ message: 'Не удалось получить сотрудников' });
+  } catch {
+    res.status(500).json({ message: 'Не удалось получить сотрудников' });
   }
 };
 
@@ -22,25 +20,13 @@ const all = async (req, res) => {
  * @desc Добавление сотрудника
  * @access Private
  */
-
 const add = async (req, res) => {
   try {
     const data = req.body;
 
-    if (!data.firstName || !data.lastName || !data.address || data.age) {
+    if (!data.firstName || !data.lastName || !data.address || !data.age) {
       return res.status(400).json({ message: 'Все поля обязательные' });
     }
-
-    //  await prisma.user.update({
-    //       where: {
-    //         id: req.user.id,
-    //       },
-    //       data: {
-    //         createdEmployee: {
-    //           create: data,
-    //         },
-    //       },
-    //     });
 
     const employee = await prisma.employee.create({
       data: {
@@ -50,18 +36,20 @@ const add = async (req, res) => {
     });
 
     return res.status(201).json(employee);
-  } catch (error) {
-    res.status(500).json({ message: 'Что-то пошло не так :(' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Что-то пошло не так' });
   }
 };
 
 /**
- * @route POST /api/employees/remove
+ * @route POST /api/empoyees/remove/:id
  * @desc Удаление сотрудника
  * @access Private
  */
 const remove = async (req, res) => {
   const { id } = req.body;
+
   try {
     await prisma.employee.delete({
       where: {
@@ -69,18 +57,17 @@ const remove = async (req, res) => {
       },
     });
 
-    res.status(204).json('Ok');
-  } catch (error) {
-    res.status(500).json({ message: 'Не удалось удалить сотрудника :(' });
+    res.status(204).json('OK');
+  } catch {
+    res.status(500).json({ message: 'Не удалось удалить сотрудника' });
   }
 };
 
 /**
- * @route PUT /api/employees/edit/:id
+ * @route PUT /api/empoyees/edit/:id
  * @desc Редактирование сотрудника
  * @access Private
  */
-
 const edit = async (req, res) => {
   const data = req.body;
   const id = data.id;
@@ -90,14 +77,12 @@ const edit = async (req, res) => {
       where: {
         id,
       },
-      data: {
-        data,
-      },
+      data,
     });
 
-    res.status(204).json('Ok');
-  } catch {
-    res.status(500).json({ message: 'Не удалось редактировать сотрудника :(' });
+    res.status(204).json('OK');
+  } catch (err) {
+    res.status(500).json({ message: 'Не удалось редактировать сотрудника' });
   }
 };
 
@@ -106,9 +91,8 @@ const edit = async (req, res) => {
  * @desc Получение сотрудника
  * @access Private
  */
-
 const employee = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // http://localhost:8000/api/employees/9fe371c1-361f-494a-9def-465959ecc098
 
   try {
     const employee = await prisma.employee.findUnique({
@@ -119,7 +103,7 @@ const employee = async (req, res) => {
 
     res.status(200).json(employee);
   } catch {
-    res.status(500).json({ message: 'Не удалось получить сотрудника :(' });
+    res.status(500).json({ message: 'Не удалось получить сотрудника' });
   }
 };
 
